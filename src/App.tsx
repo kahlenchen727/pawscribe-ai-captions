@@ -111,9 +111,9 @@ Context:
 - Overall tone: ${overallTone || 'engaging and social media friendly'}
 
 Requirements:
-- Write ONLY in ${language} language${language === 'Traditional Chinese' ? ' (繁體中文, not simplified Chinese)' : ''}
+- Write ONLY in ${language} language${language === 'Traditional Chinese' ? ' (use Traditional Chinese characters 繁體中文, NOT Simplified Chinese 简体中文)' : ''}
 - Make captions suitable for Instagram/social media
-- Include relevant hashtags in ${language}
+- Include relevant hashtags in ${language}${language === 'Traditional Chinese' ? ' (hashtags must also use Traditional Chinese characters)' : ''}
 - Keep each caption under 280 characters
 - Make them engaging and authentic
 
@@ -131,7 +131,7 @@ Return the response as a JSON array of objects with 'caption' and 'hashtags' fie
           body: JSON.stringify({
             imageBase64: imageBase64,
             userNotes: languagePrompt,
-            tone: `${language} language, ${overallTone || 'engaging'}`
+            tone: `${language} language${language === 'Traditional Chinese' ? ' (Traditional Chinese characters only, no Simplified Chinese)' : ''}, ${overallTone || 'engaging'}`
           }),
         })
         
@@ -207,7 +207,7 @@ Return the response as a JSON array of objects with 'caption' and 'hashtags' fie
                     <img
                       src={image.preview}
                       alt="Selected"
-                      className="w-full h-40 object-cover rounded-lg"
+                      className="w-full h-64 object-cover rounded-lg"
                     />
                     <button
                       onClick={() => removeImage(image.id)}
