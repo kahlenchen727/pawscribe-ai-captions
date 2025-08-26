@@ -123,7 +123,7 @@ Return the response as a JSON array of objects with 'caption' and 'hashtags' fie
         console.log('Generating captions for language:', language)
         console.log('Sending prompt:', languagePrompt.substring(0, 100) + '...')
         
-        const captionResponse = await fetch('http://localhost:3001/api/generate-captions', {
+        const captionResponse = await fetch('https://pawscribe-api-869751453118.us-central1.run.app/api/generate-captions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
