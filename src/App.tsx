@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useAuth } from './contexts/AuthContext'
+import LoginButton from './components/LoginButton'
 
 interface ImageWithNotes {
   file: File
@@ -8,6 +10,7 @@ interface ImageWithNotes {
 }
 
 function App() {
+  const { user, isLoading: authLoading } = useAuth()
   const [selectedImages, setSelectedImages] = useState<ImageWithNotes[]>([])
   const [overallTone, setOverallTone] = useState('')
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['English'])
@@ -169,15 +172,48 @@ Return the response as a JSON array of objects with 'caption' and 'hashtags' fie
     }
   }
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">
-          AI Caption Generator
-        </h1>
-        <p className="text-lg text-gray-600 mb-8 text-center">
-          Upload multiple images and get AI-powered social media captions for your post
-        </p>
+        {/* Header with Login */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              AI Caption Generator
+            </h1>
+            <p className="text-lg text-gray-600">
+              Upload multiple images and get AI-powered social media captions for your post
+            </p>
+          </div>
+          <LoginButton />
+        </div>
+
+        {!user && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-500 rounded-full p-2">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-900">Sign in to save your captions</h3>
+                <p className="text-blue-700 text-sm">You can still use the app without signing in, but your captions won't be saved.</p>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Image Upload */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
