@@ -17,7 +17,7 @@ function App() {
 
   const availableLanguages = [
     { code: 'English', name: 'English', flag: '🇺🇸' },
-    { code: 'Chinese', name: '中文', flag: '🇨🇳' },
+    { code: 'Traditional Chinese', name: '繁體中文', flag: '🇹🇼' },
     { code: 'Japanese', name: '日本語', flag: '🇯🇵' },
     { code: 'Korean', name: '한국어', flag: '🇰🇷' },
     { code: 'Spanish', name: 'Español', flag: '🇪🇸' },
@@ -111,7 +111,7 @@ Context:
 - Overall tone: ${overallTone || 'engaging and social media friendly'}
 
 Requirements:
-- Write ONLY in ${language} language
+- Write ONLY in ${language} language${language === 'Traditional Chinese' ? ' (繁體中文, not simplified Chinese)' : ''}
 - Make captions suitable for Instagram/social media
 - Include relevant hashtags in ${language}
 - Keep each caption under 280 characters
