@@ -78,7 +78,7 @@ function App() {
     setError(null)
     
     try {
-      const newCaptions: {[key: string]: string[]} = {}
+      const newCaptions: {[key: string]: Array<{caption: string, hashtags: string}>} = {}
       
       // Process each language separately
       for (const language of selectedLanguages) {
