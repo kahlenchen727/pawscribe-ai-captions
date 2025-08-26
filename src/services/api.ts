@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { UploadResponse, CaptionResponse, GenerateCaptionRequest } from '../types'
+import type { UploadResponse, CaptionResponse, GenerateCaptionRequest } from '../types'
 
 const API_BASE_URL = 'http://localhost:3001'
 

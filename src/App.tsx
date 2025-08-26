@@ -11,7 +11,7 @@ function App() {
   const [selectedImages, setSelectedImages] = useState<ImageWithNotes[]>([])
   const [overallTone, setOverallTone] = useState('')
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['English'])
-  const [captions, setCaptions] = useState<{[key: string]: string[]}>({})
+  const [captions, setCaptions] = useState<{[key: string]: Array<{caption: string, hashtags: string}>}>({})
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -55,7 +55,7 @@ function App() {
       reader.readAsDataURL(file)
     })
     
-    setCaptions([])
+    setCaptions({})
     setError(null)
     // Clear the input so same files can be selected again
     e.target.value = ''

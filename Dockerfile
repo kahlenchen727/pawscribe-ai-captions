@@ -1,5 +1,5 @@
 # Multi-stage build for React app
-FROM node:18-slim as builder
+FROM node:20-slim as builder
 
 # Set working directory
 WORKDIR /app

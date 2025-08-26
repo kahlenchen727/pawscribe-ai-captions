@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Caption } from '../types'
+import type { Caption } from '../types'
 
 interface CaptionDisplayProps {
   captions: Caption[]
