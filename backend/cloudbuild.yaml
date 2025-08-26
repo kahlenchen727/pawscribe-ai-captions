@@ -1,0 +1,25 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/pawscribe-api', '.']
+  # Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/pawscribe-api']
+  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: 
+      - 'run'
+      - 'deploy'
+      - 'pawscribe-api'
+      - '--image=gcr.io/$PROJECT_ID/pawscribe-api'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--service-account=pawscribe-service@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--set-secrets=OPENAI_API_KEY=openai-api-key:latest'
+      - '--set-env-vars=PROJECT_ID=$PROJECT_ID,BUCKET_NAME=pawscribe-images-$PROJECT_ID'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--port=3001'
+
+images:
+  - 'gcr.io/$PROJECT_ID/pawscribe-api'
