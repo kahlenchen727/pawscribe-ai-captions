@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { GoogleAuth } from 'google-oauth-gsi'
+import { createContext, useContext, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import type { User, AuthContextType, GoogleCredentialResponse } from '../types/auth'
 
@@ -19,24 +19,29 @@ interface GoogleJwtPayload {
   exp: number
 }
 
+// Extend Window interface for Google Identity Services
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: any) => void
+          prompt: () => void
+          renderButton: (element: HTMLElement, options: any) => void
+          disableAutoSelect: () => void
+          cancel: () => void
+        }
+      }
+    }
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [googleAuth, setGoogleAuth] = useState<GoogleAuth | null>(null)
+  const [isGoogleReady, setIsGoogleReady] = useState(false)
 
   useEffect(() => {
-    // Initialize Google OAuth
-    if (GOOGLE_CLIENT_ID) {
-      const auth = new GoogleAuth()
-      auth.initializeGoogleSignIn({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      })
-      setGoogleAuth(auth)
-    }
-
     // Check if user is already logged in (from localStorage)
     const savedUser = localStorage.getItem('pawscribe_user')
     if (savedUser) {
@@ -49,7 +54,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setIsLoading(false)
+    // Initialize Google OAuth when script loads
+    const initializeGoogle = () => {
+      if (window.google && GOOGLE_CLIENT_ID) {
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        })
+        setIsGoogleReady(true)
+      }
+      setIsLoading(false)
+    }
+
+    // Check if Google script is already loaded
+    if (window.google) {
+      initializeGoogle()
+    } else {
+      // Wait for Google script to load
+      const checkGoogle = setInterval(() => {
+        if (window.google) {
+          initializeGoogle()
+          clearInterval(checkGoogle)
+        }
+      }, 100)
+
+      // Cleanup after 10 seconds
+      setTimeout(() => {
+        clearInterval(checkGoogle)
+        if (!window.google) {
+          console.error('Google Identity Services failed to load')
+          setIsLoading(false)
+        }
+      }, 10000)
+    }
   }, [])
 
   const handleCredentialResponse = (response: GoogleCredentialResponse) => {
@@ -73,16 +112,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const login = () => {
-    if (googleAuth) {
-      googleAuth.signIn()
+    if (isGoogleReady && window.google) {
+      window.google.accounts.id.prompt()
     } else {
-      console.error('Google Auth not initialized')
+      console.error('Google Auth not ready')
     }
   }
 
   const logout = () => {
-    if (googleAuth) {
-      googleAuth.signOut()
+    if (isGoogleReady && window.google) {
+      window.google.accounts.id.disableAutoSelect()
     }
     setUser(null)
     localStorage.removeItem('pawscribe_user')
